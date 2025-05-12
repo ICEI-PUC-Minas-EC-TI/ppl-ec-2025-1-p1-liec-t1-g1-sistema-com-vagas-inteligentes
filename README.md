@@ -1,25 +1,25 @@
-# TÍTULO DO PROJETO
+# Sistema de Vagas Inteligentes
 
-`CAMPUS/UNIDADE`
+`Lourdes/Praça da Liberdade`
 
-`CURSO`
+`Engenharia da Computação`
 
-`SEMESTRE`
+`1° Semestre/2025`
 
-`DISCIPLINA`
+`Laboratório de Introdução à Engenharia da Computação`
 
 
 ## Integrantes
 
-* Nome completo do aluno 1
-* Nome completo do aluno 2
-* Nome completo do aluno 3
-* Nome completo do aluno 4
-* Nome completo do aluno 5
+* Pedro de Castro Dutra Flores
+* Pedro Riggio Moreno
+* Guilherme Meireles Faria
+* João Pedro Souza Cruz
+* Esdras Silva Carvalho
 
 ## Orientador
 
-* Nome completo do professor 1
+* Felipe Augusto Lara Soares 
 
 ## Resumo
 
