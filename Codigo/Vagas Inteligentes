@@ -7,6 +7,8 @@
 #define TRIG4 26
 #define ECHO4 25
 
+#define LED 2  // Defina aqui o pino digital ao qual o LED está conectado
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Inicializando sensores...");
@@ -15,6 +17,8 @@ void setup() {
   pinMode(TRIG2, OUTPUT); pinMode(ECHO2, INPUT);
   pinMode(TRIG3, OUTPUT); pinMode(ECHO3, INPUT);
   pinMode(TRIG4, OUTPUT); pinMode(ECHO4, INPUT);
+
+  pinMode(LED, OUTPUT); // Configura o pino do LED como saída
 }
 
 float getDistance(int trigPin, int echoPin) {
@@ -24,8 +28,7 @@ float getDistance(int trigPin, int echoPin) {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
 
-  // Timeout de 30ms para evitar travamentos
-  long duration = pulseIn(echoPin, HIGH, 30000);
+  long duration = pulseIn(echoPin, HIGH, 30000); // Timeout de 30ms
   float distance = duration * 0.0343 / 2;
   return distance;
 }
@@ -35,6 +38,13 @@ void loop() {
   float distance2 = getDistance(TRIG2, ECHO2);
   float distance3 = getDistance(TRIG3, ECHO3);
   float distance4 = getDistance(TRIG4, ECHO4);
+
+  // Condição para acender o LED se a distância do sensor 1 for menor que 10 cm
+  if (distance1 > 0 && distance1 < 10) {
+    digitalWrite(LED, HIGH);  // Liga o LED
+  } else {
+    digitalWrite(LED, LOW);   // Desliga o LED
+  }
 
   Serial.print("Sensor 1: "); Serial.print(distance1); Serial.println(" cm");
   Serial.print("Sensor 2: "); Serial.print(distance2); Serial.println(" cm");
