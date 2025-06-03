@@ -2,7 +2,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
 
-// Pin definitions for LEDs and ultrasonic sensors
 const int led1 = 33;    // GPIO33
 const int led2 = 32;    // GPIO32
 const int led3 = 27;    // GPIO27
@@ -17,18 +16,13 @@ const int ultraT4 = 17; // GPIO17 (Trigger 4)
 const int ultraE4 = 16; // GPIO16 (Echo 4)
 const float distanciaLimite = 50.0;
 
-// Nokia 5110 LCD pin configuration (Hardware SPI - VSPI)
 const int lcd_dc = 15;   // GPIO15 (Data/Command select)
 const int lcd_cs = 5;    // GPIO5 (Chip Select, VSPI CS0)
 const int lcd_rst = 4;   // GPIO4 (Reset)
-// SCLK and MOSI are handled by VSPI defaults: SCLK = GPIO18, MOSI = GPIO23
-// Note: GPIO23 is shared with ultraE1, but we reassign ultraE1 to avoid conflict
 
-// Initialize Nokia 5110 display with hardware SPI
 Adafruit_PCD8544 display = Adafruit_PCD8544(lcd_dc, lcd_cs, lcd_rst);
 
 void setup() {
-  // Initialize pins
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
   pinMode(led3, OUTPUT);
@@ -42,14 +36,13 @@ void setup() {
   pinMode(ultraT4, OUTPUT);
   pinMode(ultraE4, INPUT);
 
-  // Initialize the Nokia 5110 display
   display.begin();
-  display.setContrast(50); // Adjust contrast for best viewing (0-127)
+  display.setContrast(50); 
   display.clearDisplay();
-  display.display(); // Update display
+  display.display(); 
   delay(2000);
 
-  Serial.begin(115200); // ESP32 supports higher baud rates
+  Serial.begin(115200); 
 }
 
 float medirDistancia(int ultraT, int ultraE) {
@@ -102,20 +95,21 @@ void loop() {
     sensorDesativado++;
   }
 
-  // Clear the display buffer
   display.clearDisplay();
-  
-  // Set text size and position for Nokia 5110
-  display.setTextSize(1); // Default size
-  display.setTextColor(BLACK); // Set text color to black
-  display.setCursor(0, 0); // Top-left corner
+  display.setTextSize(1); 
+  display.setTextColor(BLACK); 
+  display.setCursor(0, 0);
   display.print("Livres: ");
   display.print(sensorDesativado);
-  display.setCursor(0, 16); // Move to next "line" (y=16 pixels down)
+  display.setCursor(0, 16); 
   display.print("Ocupadas: ");
   display.print(sensorAtivado);
-  
-  // Update the display
   display.display();
+  delay(2000);
+
+  Serial.print("Livres: ");
+  Serial.println(sensorDesativado);
+  Serial.print("Ocupado: ");
+  Serial.println(sensorAtivado);
   delay(2000);
 }
