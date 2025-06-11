@@ -1,81 +1,114 @@
-#include <SPI.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_PCD8544.h>
+const int led1 = 13;
+const int led2 = 12;
+const int led3 = 14;
+const int led4 = 27;
 
-const int led1 = 32;
-const int ultraT1 = 22;
-const int ultraE1 = 21;
+const int trig1 = 26;
+const int trig2 = 33;
+const int trig3 = 35;
+const int trig4 = 23;
+
+const int echo1 = 25;
+const int echo2 = 32;
+const int echo3 = 34;
+const int echo4 = 22;
+
 const float distanciaLimite = 50.0;
 
-const int lcd_dc = 15;
-const int lcd_cs = 12;
-const int lcd_rst = 4;
-
-SPIClass hspi(HSPI);
-Adafruit_PCD8544 display = Adafruit_PCD8544(lcd_dc, lcd_cs, lcd_rst, &hspi);
-
 void setup() {
-  pinMode(led1, OUTPUT);
-  pinMode(ultraT1, OUTPUT);
-  pinMode(ultraE1, INPUT);
-
   Serial.begin(115200);
 
-  hspi.begin(14, 2, 13, 12);
+  pinMode(led1, OUTPUT);
+  digitalWrite(led1, LOW);
+  pinMode(trig1, OUTPUT);
+  pinMode(echo1, INPUT);
 
-  display.begin();
-  display.setContrast(50);
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(BLACK);
-  display.setCursor(0, 0);
-  display.println("Iniciando...");
-  display.display();
-  delay(2000);
-  display.clearDisplay();
+  pinMode(led2, OUTPUT);
+  digitalWrite(led2, LOW);
+  pinMode(trig2, OUTPUT);
+  pinMode(echo2, INPUT);
+
+  pinMode(led3, OUTPUT);
+  digitalWrite(led3, LOW);
+  pinMode(trig3, OUTPUT);
+  pinMode(echo3, INPUT);
+
+  pinMode(led4, OUTPUT);
+  digitalWrite(led4, LOW);
+  pinMode(trig4, OUTPUT);
+  pinMode(echo4, INPUT);
 }
 
-float medirDistancia(int ultraT, int ultraE) {
-  digitalWrite(ultraT, LOW);
+float medirDistancia(int trigPin, int echoPin) {
+  digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
-  digitalWrite(ultraT, HIGH);
+  digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
-  digitalWrite(ultraT, LOW);
+  digitalWrite(trigPin, LOW);
 
-  long duracao = pulseIn(ultraE, HIGH, 30000);
+  long duracao = pulseIn(echoPin, HIGH, 30000);
   if (duracao == 0) return -1.0;
   float distancia = duracao * 0.034 / 2;
   return distancia;
 }
 
 void loop() {
-  float distancia1 = medirDistancia(ultraT1, ultraE1);
+  int sensoresAtivados = 0;
+  int sensoresDesativados = 0;
 
-  int sensorAtivado = 0;
-  int sensorDesativado = 0;
-
-  if (distancia1 < distanciaLimite && distancia1 > 0) {
+  float distancia1 = medirDistancia(trig1, echo1);
+  if (distancia1 > 0 && distancia1 < distanciaLimite) {
     digitalWrite(led1, HIGH);
-    sensorAtivado++;
+    sensoresAtivados++;
   } else {
     digitalWrite(led1, LOW);
-    sensorDesativado++;
+    sensoresDesativados++;
   }
+  Serial.print("Sensor 1: ");
+  Serial.print(distancia1);
+  Serial.println(" cm");
 
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(BLACK);
-  display.setCursor(0, 0);
-  display.print("Livres: ");
-  display.print(sensorDesativado);
-  display.setCursor(0, 16);
-  display.print("Ocupadas: ");
-  display.print(sensorAtivado);
-  display.display();
+  float distancia2 = medirDistancia(trig2, echo2);
+  if (distancia2 > 0 && distancia2 < distanciaLimite) {
+    digitalWrite(led2, HIGH);
+    sensoresAtivados++;
+  } else {
+    digitalWrite(led2, LOW);
+    sensoresDesativados++;
+  }
+  Serial.print("Sensor 2: ");
+  Serial.print(distancia2);
+  Serial.println(" cm");
 
-  Serial.print("Livres: ");
-  Serial.println(sensorDesativado);
-  Serial.print("Ocupado: ");
-  Serial.println(sensorAtivado);
+  float distancia3 = medirDistancia(trig3, echo3);
+  if (distancia3 > 0 && distancia3 < distanciaLimite) {
+    digitalWrite(led3, HIGH);
+    sensoresAtivados++;
+  } else {
+    digitalWrite(led3, LOW);
+    sensoresDesativados++;
+  }
+  Serial.print("Sensor 3: ");
+  Serial.print(distancia3);
+  Serial.println(" cm");
+
+  float distancia4 = medirDistancia(trig4, echo4);
+  if (distancia4 > 0 && distancia4 < distanciaLimite) {
+    digitalWrite(led4, HIGH);
+    sensoresAtivados++;
+  } else {
+    digitalWrite(led4, LOW);
+    sensoresDesativados++;
+  }
+  Serial.print("Sensor 4: ");
+  Serial.print(distancia4);
+  Serial.println(" cm");
+
+  Serial.print("Total Livres: ");
+  Serial.println(sensoresDesativados);
+  Serial.print("Total Ocupados: ");
+  Serial.println(sensoresAtivados);
+  Serial.println("------------------------");
+
   delay(2000);
 }
