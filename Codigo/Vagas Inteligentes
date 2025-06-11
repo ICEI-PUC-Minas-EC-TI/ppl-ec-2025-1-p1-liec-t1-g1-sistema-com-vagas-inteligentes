@@ -2,47 +2,37 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
 
-const int led1 = 33;    // GPIO33
-const int led2 = 32;    // GPIO32
-const int led3 = 27;    // GPIO27
-const int led4 = 26;    // GPIO26
-const int ultraT1 = 25; // GPIO25 (Trigger 1)
-const int ultraE1 = 23; // GPIO23 (Echo 1)
-const int ultraT2 = 22; // GPIO22 (Trigger 2)
-const int ultraE2 = 21; // GPIO21 (Echo 2)
-const int ultraT3 = 19; // GPIO19 (Trigger 3)
-const int ultraE3 = 18; // GPIO18 (Echo 3)
-const int ultraT4 = 17; // GPIO17 (Trigger 4)
-const int ultraE4 = 16; // GPIO16 (Echo 4)
+const int led1 = 32;
+const int ultraT1 = 22;
+const int ultraE1 = 21;
 const float distanciaLimite = 50.0;
 
-const int lcd_dc = 15;   // GPIO15 (Data/Command select)
-const int lcd_cs = 5;    // GPIO5 (Chip Select, VSPI CS0)
-const int lcd_rst = 4;   // GPIO4 (Reset)
+const int lcd_dc = 15;
+const int lcd_cs = 12;
+const int lcd_rst = 4;
 
-Adafruit_PCD8544 display = Adafruit_PCD8544(lcd_dc, lcd_cs, lcd_rst);
+SPIClass hspi(HSPI);
+Adafruit_PCD8544 display = Adafruit_PCD8544(lcd_dc, lcd_cs, lcd_rst, &hspi);
 
 void setup() {
   pinMode(led1, OUTPUT);
-  pinMode(led2, OUTPUT);
-  pinMode(led3, OUTPUT);
-  pinMode(led4, OUTPUT);
   pinMode(ultraT1, OUTPUT);
   pinMode(ultraE1, INPUT);
-  pinMode(ultraT2, OUTPUT);
-  pinMode(ultraE2, INPUT);
-  pinMode(ultraT3, OUTPUT);
-  pinMode(ultraE3, INPUT);
-  pinMode(ultraT4, OUTPUT);
-  pinMode(ultraE4, INPUT);
+
+  Serial.begin(115200);
+
+  hspi.begin(14, 2, 13, 12);
 
   display.begin();
-  display.setContrast(50); 
+  display.setContrast(50);
   display.clearDisplay();
-  display.display(); 
+  display.setTextSize(1);
+  display.setTextColor(BLACK);
+  display.setCursor(0, 0);
+  display.println("Iniciando...");
+  display.display();
   delay(2000);
-
-  Serial.begin(115200); 
+  display.clearDisplay();
 }
 
 float medirDistancia(int ultraT, int ultraE) {
@@ -51,18 +41,16 @@ float medirDistancia(int ultraT, int ultraE) {
   digitalWrite(ultraT, HIGH);
   delayMicroseconds(10);
   digitalWrite(ultraT, LOW);
-  
-  long duracao = pulseIn(ultraE, HIGH);
+
+  long duracao = pulseIn(ultraE, HIGH, 30000);
+  if (duracao == 0) return -1.0;
   float distancia = duracao * 0.034 / 2;
   return distancia;
 }
 
 void loop() {
   float distancia1 = medirDistancia(ultraT1, ultraE1);
-  float distancia2 = medirDistancia(ultraT2, ultraE2);
-  float distancia3 = medirDistancia(ultraT3, ultraE3);
-  float distancia4 = medirDistancia(ultraT4, ultraE4);
-  
+
   int sensorAtivado = 0;
   int sensorDesativado = 0;
 
@@ -73,39 +61,17 @@ void loop() {
     digitalWrite(led1, LOW);
     sensorDesativado++;
   }
-  if (distancia2 < distanciaLimite && distancia2 > 0) {
-    digitalWrite(led2, HIGH);
-    sensorAtivado++;
-  } else {
-    digitalWrite(led2, LOW);
-    sensorDesativado++;
-  }
-  if (distancia3 < distanciaLimite && distancia3 > 0) {
-    digitalWrite(led3, HIGH);
-    sensorAtivado++;
-  } else {
-    digitalWrite(led3, LOW);
-    sensorDesativado++;
-  }
-  if (distancia4 < distanciaLimite && distancia4 > 0) {
-    digitalWrite(led4, HIGH);
-    sensorAtivado++;
-  } else {
-    digitalWrite(led4, LOW);
-    sensorDesativado++;
-  }
 
   display.clearDisplay();
-  display.setTextSize(1); 
-  display.setTextColor(BLACK); 
+  display.setTextSize(1);
+  display.setTextColor(BLACK);
   display.setCursor(0, 0);
   display.print("Livres: ");
   display.print(sensorDesativado);
-  display.setCursor(0, 16); 
+  display.setCursor(0, 16);
   display.print("Ocupadas: ");
   display.print(sensorAtivado);
   display.display();
-  delay(2000);
 
   Serial.print("Livres: ");
   Serial.println(sensorDesativado);
