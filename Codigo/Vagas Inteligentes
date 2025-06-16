@@ -1,6 +1,6 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-//biblioteca, baixada extraida na pasta documentos arduino https://github.com/johnrickman/LiquidCrystal_I2C/releases/tag/1.1.3
+//biblioteca, baixada extraida na pasta documentos arduino https://github.com/johnrickman/LiquidCrystal_I2C/releases/tag/1.1.3 (quando extrair tem que tirar - 1.1.3 do nome da blibloteca para funcionar
 
 // Configuração do LCD I2C (endereço comum: 0x27, 16 colunas, 2 linhas)
 LiquidCrystal_I2C lcd(0x27, 16, 2);
