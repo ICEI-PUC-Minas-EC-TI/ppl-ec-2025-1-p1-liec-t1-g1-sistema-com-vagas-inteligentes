@@ -15,7 +15,7 @@ const int led4 = 27;
 
 const int trig1 = 26;
 const int trig2 = 33;
-const int trig3 = 35;
+const int trig3 = 18;
 const int trig4 = 23;
 
 const int echo1 = 25;
