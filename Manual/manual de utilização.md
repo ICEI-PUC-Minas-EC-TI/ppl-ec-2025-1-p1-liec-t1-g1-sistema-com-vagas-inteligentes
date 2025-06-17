@@ -1,4 +1,4 @@
 
 ## Instruções de utilização
-
+  Para colocar em prática o sistema de estacionamento com vagas inteligentes é muito simples prático já que os circuitos estão todos prontos. A parte onde um manual é necessário é no app, onde os usuários irão entrar no estacionamento onde desejam parar, e em seguida escolher a sua vaga(este layou aparece no momento em que o usuárui entrar no app). Quando for reservada, o led ficará vermelho, indicando aos outros veículos que a vaga já tem dono sendo que, o usuário escolhe o tempo determinado pelo app(15 minutos, 1 hora, 1 dia) e paga o preço correspondente ao tempo. Ao sair da vaga, o led se apagará, mostrando que está livre e pronta para ser ocupada e reservada novamente.
 Assim que a primeira versão do projeto estiver disponível, deverá complementar com as instruções de utilização. Descreva como configurar o hardware/software e informações importantes para executar o projeto.
