@@ -25,11 +25,11 @@ const float distanciaLimite = 50.0;
 void setup() {
   Serial.begin(115200);
 
-  Wire.begin(21, 5);       // ESP32: SDA = 21, SCL = 5
-  lcd.init();              // Inicializa o LCD
-  lcd.backlight();         // Liga a luz de fundo
+  Wire.begin(21, 5);       // SDA 21 SCL 5
+  lcd.init();        
+  lcd.backlight();        
 
-  // Configuração dos sensores e LEDs
+
   pinMode(led1, OUTPUT); digitalWrite(led1, LOW);
   pinMode(trig1, OUTPUT); pinMode(echo1, INPUT);
 
@@ -50,6 +50,7 @@ float medirDistancia(int trigPin, int echoPin) {
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
 
+//calculo da distancia 
   long duracao = pulseIn(echoPin, HIGH, 30000);
   if (duracao == 0) return -1.0;
   float distancia = duracao * 0.034 / 2;
@@ -60,6 +61,7 @@ void loop() {
   int sensoresAtivados = 0;
   int sensoresDesativados = 0;
 
+// Se for identificado alguma coisa no raio do ultrassonico o led é acendido
   float distancia1 = medirDistancia(trig1, echo1);
   if (distancia1 > 0 && distancia1 < distanciaLimite) {
     digitalWrite(led1, HIGH);
@@ -68,7 +70,7 @@ void loop() {
     digitalWrite(led1, LOW);
     sensoresDesativados++;
   }
-
+// Se for identificado alguma coisa no raio do ultrassonico o led é acendido
   float distancia2 = medirDistancia(trig2, echo2);
   if (distancia2 > 0 && distancia2 < distanciaLimite) {
     digitalWrite(led2, HIGH);
@@ -77,7 +79,7 @@ void loop() {
     digitalWrite(led2, LOW);
     sensoresDesativados++;
   }
-
+// Se for identificado alguma coisa no raio do ultrassonico o led é acendido
   float distancia3 = medirDistancia(trig3, echo3);
   if (distancia3 > 0 && distancia3 < distanciaLimite) {
     digitalWrite(led3, HIGH);
@@ -86,7 +88,7 @@ void loop() {
     digitalWrite(led3, LOW);
     sensoresDesativados++;
   }
-
+// Se for identificado alguma coisa no raio do ultrassonico o led é acendido
   float distancia4 = medirDistancia(trig4, echo4);
   if (distancia4 > 0 && distancia4 < distanciaLimite) {
     digitalWrite(led4, HIGH);
@@ -96,14 +98,14 @@ void loop() {
     sensoresDesativados++;
   }
 
-  // Mostrar no serial
+  
   Serial.print("Total Livres: ");
   Serial.println(sensoresDesativados);
   Serial.print("Total Ocupados: ");
   Serial.println(sensoresAtivados);
   Serial.println("------------------------");
 
-  // Mostrar no LCD
+  // Display mostrando vagas livres e vagas ocupadas
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Livres: ");
