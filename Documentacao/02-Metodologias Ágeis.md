@@ -27,8 +27,10 @@ Para organanização total do projeto, nos encontramos 100% das vezes presencial
 
 As ferramentas utilizadas no projeto foram:
 
-- MIT app Inventor;
 - Arduino IDE;
 - Whatsapp;
+- Thunkable;
+- Thinkercad;
+- Github;
 
-  Para organização de encontros, utilizamos Whatsapp para comunicarmos encontros e progressos, o app Thunkable para desnvolvimento do software e o simulador Tinkercad para projeto de hardware No mais, usamos o GitHub para registro e organização das etapas e evoluções do trabalho.
+  Para organização de encontros, utilizamos Whatsapp para comunicarmos encontros e progressos, o app Thunkable para desnvolvimento do software e o simulador Tinkercad para projeto de hardware e Arduine IDE para testes de software. No mais, usamos o GitHub para registro e organização das etapas e evoluções do trabalho.
