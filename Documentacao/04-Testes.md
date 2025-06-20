@@ -1,3 +1,3 @@
 # Testes do Projeto
-
 Descreva aqui como foram realizados os testes para o funcionamento do projeto. Descreva também os resultados encontrados e as limitações do projeto.
+Para desenvolver o porjeto, o grupo apresentou muita união, onde cada um contribuiu para a resolução dos mesmos. O lugar onde mais houveram empencilhos foi na montagem do circuito, pois trabalhamos com um display pela primeira vez, mas o grupo logo se iterou e resolveu estes problemas. A conexão bluetooth também foi uma dificuldade peça mesma razão. Mas ao tentarmos e observamarmos com atenção, conseguimos solucionar este e ademais problemas do trabalho e concluí-lo.
