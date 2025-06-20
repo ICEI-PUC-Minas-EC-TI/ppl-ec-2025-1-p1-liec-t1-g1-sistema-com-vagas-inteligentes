@@ -5,10 +5,10 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 BluetoothSerial SerialBT;
 
-const int led1 = 13, trig1 = 26, echo1 = 25;
-const int led2 = 12, trig2 = 33, echo2 = 32;
-const int led3 = 14, trig3 = 18, echo3 = 34;
-const int led4 = 27, trig4 = 23, echo4 = 22;
+const int led1 = 27, trig1 = 26, echo1 = 25;
+const int led2 = 14, trig2 = 33, echo2 = 32;
+const int led3 = 13, trig3 = 18, echo3 = 34;
+const int led4 = 12, trig4 = 23, echo4 = 22;
 
 const float distanciaLimite = 10.0;
 
@@ -26,8 +26,7 @@ float medirDistancia(int trig, int echo) {
 }
 
 void setup() {
-  Serial.begin(115200);
-  SerialBT.begin("PARKSYNC");
+  Serial.begin(115200);  SerialBT.begin("PARKSYNC");
 
   Wire.begin(21, 5);
   lcd.init(); lcd.backlight();
