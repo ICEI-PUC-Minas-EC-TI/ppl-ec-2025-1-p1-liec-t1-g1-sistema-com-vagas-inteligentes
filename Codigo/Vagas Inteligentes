@@ -1,57 +1,34 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
-#include <BLE2902.h>
+#include <BluetoothSerial.h>
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
+BluetoothSerial SerialBT;
 
 const int led1 = 13, trig1 = 26, echo1 = 25;
 const int led2 = 12, trig2 = 33, echo2 = 32;
 const int led3 = 14, trig3 = 18, echo3 = 34;
 const int led4 = 27, trig4 = 23, echo4 = 22;
 
-const float distanciaLimite = 50.0;
+const float distanciaLimite = 10.0;
 
-#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define CHARACTERISTIC_UUID "d0ff3949-1e9e-4155-b70f-54b8a3731e26"
+bool vagasReservadas[4] = {false, false, false, false};
+bool reservasOcupadas[4] = {false, false, false, false}; // NOVO: controla se a vaga reservada foi ocupada
+uint8_t estados[4] = {0, 0, 0, 0}; // 0 = livre, 1 = ocupada
 
-BLEServer* pServer = nullptr;
-BLECharacteristic* pCharacteristic = nullptr;
-bool deviceConnected = false;
-
-int reservada = 0;
-
-class MyCallbacks: public BLECharacteristicCallbacks {
-  void onWrite(BLECharacteristic *pCharacteristic) {
-    uint8_t* data = pCharacteristic->getData();
-    size_t len = pCharacteristic->getLength();
-
-    if (len > 0) {
-      uint8_t valor = data[0];
-      if (valor == 2) {
-        reservada++;
-        Serial.println("Reserva adicionada (2)");
-      }
-    }
-  }
-};
-
-class MyServerCallbacks: public BLEServerCallbacks {
-  void onConnect(BLEServer* pServer) {
-    deviceConnected = true;
-    Serial.println("Dispositivo conectado");
-  }
-
-  void onDisconnect(BLEServer* pServer) {
-    deviceConnected = false;
-    Serial.println("Dispositivo desconectado");
-  }
-};
+float medirDistancia(int trig, int echo) {
+  digitalWrite(trig, LOW); delayMicroseconds(2);
+  digitalWrite(trig, HIGH); delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  long duracao = pulseIn(echo, HIGH, 30000);
+  if (duracao == 0) return -1.0;
+  return duracao * 0.034 / 2.0;
+}
 
 void setup() {
   Serial.begin(115200);
+  SerialBT.begin("PARKSYNC");
+
   Wire.begin(21, 5);
   lcd.init(); lcd.backlight();
 
@@ -60,97 +37,70 @@ void setup() {
   pinMode(led3, OUTPUT); pinMode(trig3, OUTPUT); pinMode(echo3, INPUT);
   pinMode(led4, OUTPUT); pinMode(trig4, OUTPUT); pinMode(echo4, INPUT);
 
-  digitalWrite(led1, LOW); digitalWrite(led2, LOW);
-  digitalWrite(led3, LOW); digitalWrite(led4, LOW);
-
-  BLEDevice::init("ESP32_Vagas");
-  pServer = BLEDevice::createServer();
-  pServer->setCallbacks(new MyServerCallbacks());
-
-  BLEService* pService = pServer->createService(SERVICE_UUID);
-  pCharacteristic = pService->createCharacteristic(
-    CHARACTERISTIC_UUID,
-    BLECharacteristic::PROPERTY_READ |
-    BLECharacteristic::PROPERTY_WRITE |
-    BLECharacteristic::PROPERTY_NOTIFY |
-    BLECharacteristic::PROPERTY_INDICATE
-  );
-
-  pCharacteristic->addDescriptor(new BLE2902());
-  pCharacteristic->setCallbacks(new MyCallbacks());
-  pService->start();
-  pServer->getAdvertising()->start();
-
-  Serial.println("BLE iniciado");
-}
-
-float medirDistancia(int trigPin, int echoPin) {
-  digitalWrite(trigPin, LOW); delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH); delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-
-  long duracao = pulseIn(echoPin, HIGH, 30000);
-  if (duracao == 0) return -1.0;
-  return duracao * 0.034 / 2;
+  Serial.println("Bluetooth iniciado");
 }
 
 void loop() {
-  uint8_t estados[4] = {0, 0, 0, 0};
-  int ocupadas = 0;
-  int livres = 0;
+  float distancias[4];
 
-  float d1 = medirDistancia(trig1, echo1);
-  estados[0] = (d1 > 0 && d1 < distanciaLimite) ? 1 : 0;
-  digitalWrite(led1, estados[0]);
-  ocupadas += estados[0];
-  livres += !estados[0];
+  // Medição de distâncias
+  distancias[0] = medirDistancia(trig1, echo1);
+  distancias[1] = medirDistancia(trig2, echo2);
+  distancias[2] = medirDistancia(trig3, echo3);
+  distancias[3] = medirDistancia(trig4, echo4);
 
-  float d2 = medirDistancia(trig2, echo2);
-  estados[1] = (d2 > 0 && d2 < distanciaLimite) ? 1 : 0;
-  digitalWrite(led2, estados[1]);
-  ocupadas += estados[1];
-  livres += !estados[1];
+  for (int i = 0; i < 4; i++) {
+    bool sensorDetectou = distancias[i] > 0 && distancias[i] < distanciaLimite;
 
-  float d3 = medirDistancia(trig3, echo3);
-  estados[2] = (d3 > 0 && d3 < distanciaLimite) ? 1 : 0;
-  digitalWrite(led3, estados[2]);
-  ocupadas += estados[2];
-  livres += !estados[2];
+    // Atualiza estado da vaga
+    if (sensorDetectou || vagasReservadas[i]) {
+      estados[i] = 1;
+    } else {
+      estados[i] = 0;
+    }
 
-  float d4 = medirDistancia(trig4, echo4);
-  estados[3] = (d4 > 0 && d4 < distanciaLimite) ? 1 : 0;
-  digitalWrite(led4, estados[3]);
-  ocupadas += estados[3];
-  livres += !estados[3];
+    // NOVO: Se havia reserva e agora o sensor detectou ocupação, marca que a reserva foi ocupada
+    if (vagasReservadas[i] && sensorDetectou) {
+      reservasOcupadas[i] = true;
+      vagasReservadas[i] = false; // Libera a reserva após ser ocupada
+    }
 
-  if (reservada > livres) {
-    reservada = livres;
-  }
+    // NOVO: Se uma vaga com reserva ocupada foi desocupada, limpa o registro da ocupação da reserva
+    if (reservasOcupadas[i] && !sensorDetectou) {
+      reservasOcupadas[i] = false;
+    }
 
-  int livresDisponiveis = livres - reservada;
-
-  // Enviar cada vaga individualmente: [numero_vaga, estado]
-  if (deviceConnected) {
-    for (uint8_t i = 0; i < 4; i++) {
-      uint8_t dados[2] = {i, estados[i]};
-      pCharacteristic->setValue(dados, 2);
-      pCharacteristic->notify();
-      delay(10); // prevenir congestionamento BLE
+    // Controla LEDs
+    switch (i) {
+      case 0: digitalWrite(led1, estados[i]); break;
+      case 1: digitalWrite(led2, estados[i]); break;
+      case 2: digitalWrite(led3, estados[i]); break;
+      case 3: digitalWrite(led4, estados[i]); break;
     }
   }
 
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Livres: ");
-  lcd.print(livresDisponiveis);
-  lcd.setCursor(0, 1);
-  lcd.print("Ocupadas: ");
-  lcd.print(ocupadas);
+  // Comunicação Bluetooth
+  if (SerialBT.available()) {
+    uint8_t vaga = SerialBT.read(); // número da vaga (1 a 4)
 
-  Serial.print("Livres: "); Serial.println(livresDisponiveis);
-  Serial.print("Ocupadas: "); Serial.println(ocupadas);
-  Serial.print("Reservadas: "); Serial.println(reservada);
-  Serial.println("------------------------");
+    if (vaga >= 1 && vaga <= 4) {
+      vagasReservadas[vaga - 1] = true;
+
+      uint8_t resposta[2] = {vaga, estados[vaga - 1]};
+      SerialBT.write(resposta, 2);
+    }
+  }
+
+  // Atualiza o LCD
+  int livres = 0, ocupadas = 0;
+  for (int i = 0; i < 4; i++) {
+    if (estados[i] == 1) ocupadas++;
+    else livres++;
+  }
+
+  lcd.clear();
+  lcd.setCursor(0, 0); lcd.print("Livres: "); lcd.print(livres);
+  lcd.setCursor(0, 1); lcd.print("Ocupadas: "); lcd.print(ocupadas);
 
   delay(2000);
 }
