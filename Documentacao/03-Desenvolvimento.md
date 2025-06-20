@@ -4,9 +4,9 @@
 Os materiais utilizados no projeto foram:
 •	(1) Placa ESP32
 •	(4) LEDs 
-•	(x) Resistores
+•	(4) Resistores
 •	(1) Protoboard
-•	(x) Fios de conexão (Jumpers)
+•	(32) Fios de conexão (Jumpers)
 •	(4) Sensores ultrassônicos
 •	(1) Display 
 
