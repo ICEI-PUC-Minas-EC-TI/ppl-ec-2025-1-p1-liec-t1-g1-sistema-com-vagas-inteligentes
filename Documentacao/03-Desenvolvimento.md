@@ -140,4 +140,9 @@ O Arduino envia dados continuamente ao aplicativo, que interpreta essas mensagen
 
 ## Comunicação entre App e Hardware
 
-Descreva como foi o processo de comunicação entre App e arduino/ESP.
+Comunicação via Bluetooth 
+Essa abordagem foi usada com o Arduino UNO e o módulo Bluetooth.
+
+No Arduino: O código foi programado para ler o status do sensor (ocupado ou livre) e enviar essas informações pela porta serial, que estava conectada ao módulo Bluetooth. Usamos Serial.print() para transmitir os dados.
+
+No App (Thunkable): Utilizamos os blocos de conexão Bluetooth do Thunkable para emparelhar o aplicativo com o módulo. Após a conexão, o app fazia a leitura constante dos dados enviados pelo Arduino e os interpretava para exibir o status da vaga na tela.
