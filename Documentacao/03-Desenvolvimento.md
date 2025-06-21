@@ -73,7 +73,37 @@ Tela de Configurações e Perfil do Usuário
 
 ### Código
 
-Descreva o desenvolvimento do código do aplicativo.
+Definição da Arquitetura e Fluxo de Dados
+-Como os sensores de ocupação enviam informações para o banco de dados?
+-Como o aplicativo recebe e exibe essas informações para os usuários?
+-Qual será o fluxo para reserva de vagas e pagamento digital?
+
+Escolha das Ferramentas e Integrações (me falem quais foram utilizadas).
+-API de Pagamentos: Para processar transações financeiras, como pagamento por PIX ou cartão.
+-Serviços de Autenticação: Para login de usuários via e-mail, senha ou autenticação social.
+
+Desenvolvimento das Funções do Aplicativo
+-Autenticação: Login, registro de usuários e senha
+-Leitura de Sensores: Receber os dados das vagas disponíveis e ocupadas.
+-Reserva de Vaga: Criar um sistema que bloqueie a vaga após a reserva e libere caso não seja usada dentro de um período.
+-Pagamento: Implementar lógica para cálculo do tempo de uso e pagamento automático.
+-Notificações: Alertar o usuário sobre sua reserva, ocupação da vaga e status de pagamento.
+
+Implementação da Interface com Blocos de Código
+-Criar variáveis globais para armazenar dados do usuário e do estacionamento.
+-Configurar a comunicação entre telas, garantindo que os dados sejam enviados corretamente.
+-Definir interações, como botões para atualizar status das vagas e ações automatizadas.
+
+Criar funções condicionais, por exemplo:
+-Se a vaga está ocupada, bloquear reserva.
+-Se o tempo da reserva expirar, liberar vaga automaticamente.
+
+Testes e Depuração
+-Verificar a conexão com o banco de dados.
+-Simular reservas e pagamentos para validar as ações.
+-Testar diferentes dispositivos para garantir compatibilidade.
+-Corrigir possíveis falhas no fluxo de reserva e ocupação das vagas.
+
 
 ## Desenvolvimento do Hardware
 
@@ -92,7 +122,21 @@ Em seguida foi realizada a integração do aplicativo ao hardware. Com isso fora
 
 ### Desenvolvimento do Código
 
-Descreva como foi o desenvolvimento do código do arduino/ESP.
+Integração com Sensores de Ocupação
+Para detectar a presença de veículos nas vagas, utilizamos sensores ultrassônicos. No código, fizemos a leitura dos dados de distância retornados pelo sensor para determinar se a vaga está ocupada
+
+Comunicação com o Aplicativo (por Bluetooth)
+Utilizamos apenas Bluetooth o Arduino enviava os dados para o app por meio de mensagens via serial.
+Testes e Calibração
+
+Durante o desenvolvimento, realizamos ajustes:
+•	Na sensibilidade do sensor, para evitar leituras falsas.
+•	No intervalo de atualização, para não sobrecarregar a comunicação.
+•	Na interpretação da distância, adaptando o código à realidade do local de instalação (altura do sensor, iluminação, posição do carro etc.)
+
+Integração com o App
+O Arduino envia dados continuamente ao aplicativo, que interpreta essas mensagens e altera o status da vaga no app. Isso foi testado em conjunto com o app desenvolvido no Thunkable, garantindo que a comunicação entre hardware e software fosse estável.
+
 
 ## Comunicação entre App e Hardware
 
