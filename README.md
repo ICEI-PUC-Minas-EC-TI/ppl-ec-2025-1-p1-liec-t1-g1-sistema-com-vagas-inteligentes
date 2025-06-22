@@ -24,8 +24,13 @@
 
 ## Resumo
 
-Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo desenvolvido.
+O projeto "Park Sync" é um sistema de estacionamento inteligente que utiliza tecnologia para otimizar a gestão de vagas em ambientes urbanos de alta densidade, como shoppings, aeroportos, hospitais e centros comerciais.
 
+Como funciona:
+Sensores ultrassônicos em cada vaga detectam a presença de veículos.
+Um Arduino processa os dados dos sensores e os envia via Bluetooth (BLE) ao aplicativo Park Sync, que exibe a disponibilidade de vagas em tempo real.
+Display LCD mostra o total de vagas livres e ocupadas; LEDs indicam o estado de cada vaga.
+Tudo isso simplifica a experiência do usuário e a gestão para administradores.
 # Código (do arduino ou esp32)
 
 <li><a href="Codigo/README.md"> Código Fonte (.ino)</a></li>
